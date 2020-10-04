@@ -1,0 +1,62 @@
+Sub StockPrice()
+
+'define variables, same for all worksheets
+    
+    Dim symbol As String
+    Dim vol As String
+    
+    Dim p_change As Double
+    Dim p_percent As Double
+    
+    
+    Dim LastRow As Long
+    Dim Summary_Row As Integer
+
+'Starting the worksheets Loop
+
+    For Each ws In Worksheets
+    
+        Summary_Row = 2
+    
+        vol = 0
+    
+        LastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    
+      ' Set headers for the summary table
+      
+        ws.Range("J1").Value = "Symbol"
+        ws.Range("K1").Value = "Yearly Change"
+        ws.Range("L1").Value = "Percent Change"
+        ws.Range("M1").Value = "Total Stock Volumn"
+
+ 'Starting the loop to find out unique ticker and trade volume
+ 
+        For i = 2 To LastRow
+    
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+        
+                symbol = ws.Cells(i, 1).Value
+            
+                vol = vol + ws.Cells(i, 7).Value
+            
+                ws.Range("J" & Summary_Row).Value = symbol
+            
+                ws.Range("M" & Summary_Row) = vol
+            
+                Summary_Row = Summary_Row + 1
+            
+                vol = 0
+            
+            
+            Else
+            
+                vol = vol + ws.Cells(i, 7).Value
+        
+            End If
+    
+        Next i
+
+    Next ws
+
+
+End Sub
