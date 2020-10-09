@@ -6,7 +6,9 @@ Sub StockPrice()
     Dim vol As String
     
     Dim p_change As Double
-    Dim p_percent As Double
+    Dim p_percent As String
+    Dim StartP As Double
+    Dim EndP As Double
     
     
     Dim LastRow As Long
@@ -28,6 +30,8 @@ Sub StockPrice()
         ws.Range("K1").Value = "Yearly Change"
         ws.Range("L1").Value = "Percent Change"
         ws.Range("M1").Value = "Total Stock Volumn"
+        
+        StartP = Cells(2, 3).Value
 
  'Starting the loop to find out unique ticker and trade volume
  
@@ -42,11 +46,25 @@ Sub StockPrice()
                 ws.Range("J" & Summary_Row).Value = symbol
             
                 ws.Range("M" & Summary_Row) = vol
+                
+                EndP = Cells(i, 6).Value
+                
+                p_change = StartP - EndP
+                
+                If StartP = 0 Then
+                    p_percent = "Initial Price is 0"
+                Else
+                    p_percent = p_change / StartP
+                End If
+                
+                ws.Range("K" & Summary_Row).Value = p_change
+                ws.Range("L" & Summary_Row).Value = p_percent
+                
+                StartP = Cells(i + 1, 3).Value
             
                 Summary_Row = Summary_Row + 1
             
                 vol = 0
-            
             
             Else
             
@@ -55,7 +73,31 @@ Sub StockPrice()
             End If
     
         Next i
-
+    
+    'Formatting the summary table
+    
+        ws.Range("J1:M1").Font.Bold = True
+        ws.Range("K:K").NumberFormat = "General"
+        ws.Range("M:M").NumberFormat = "#,##0_);[Red](#,##0)"
+        ws.Range("L:L").NumberFormat = "0.00%"
+        
+    'Percent change conditional formatting
+        Dim condition1 As FormatCondition
+        Dim condition2 As FormatCondition
+        
+        Set condition1 = ws.Range("L2:L" & Summary_Row).FormatConditions.Add(xlCellValue, xlGreater, "=0")
+        Set condition2 = ws.Range("L2:L" & Summary_Row).FormatConditions.Add(xlCellValue, xlLess, "=0")
+        
+        With condition1
+         .Interior.Color = vbGreen
+        End With
+        
+        With condition2
+         .Interior.Color = vbRed
+        End With
+    
+    ws.Columns("J:M").AutoFit
+    
     Next ws
 
 
